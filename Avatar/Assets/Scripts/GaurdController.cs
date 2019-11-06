@@ -36,6 +36,7 @@ public class GaurdController : MonoBehaviour
     private void Update()
     {
         GettingTheNearestTomb();
+        _nav.SetDestination(transform.position);
         
     }
 
