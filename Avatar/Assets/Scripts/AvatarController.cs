@@ -6,42 +6,59 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class AvatarController : MonoBehaviour
 {
-    //Cache References//
-    private NavMeshAgent _nav;
-    private Animator _anim;
+    private NavMeshAgent avatar_Nav;
+    private Animator avatar_Anim;
 
-    //Private Variables//
-    
-
-    //Public Variables//
-    public LayerMask ground;
-    
+    public LayerMask canHit;
+    RaycastHit hit;
 
     void Start()
     {
-        _nav = GetComponent<NavMeshAgent>();
-        _anim = GetComponent<Animator>();
+        avatar_Nav = GetComponent<NavMeshAgent>();
+        avatar_Anim = GetComponent<Animator>();
     }
 
     
     void Update()
-    {
-        ClickMovement();
+    { 
+        Avatar_Movement(RayHitPoint());
     }
 
-    private void ClickMovement()
+    Vector3 RayHitPoint()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+        
         if (Input.GetMouseButtonDown(0))
         {
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ground))
+            Ray cursorRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+           
+            if (Physics.Raycast(cursorRay, out hit, canHit))
             {
-                _nav.SetDestination(hit.point);
+                if (hit.collider.gameObject.tag == "Enmey")
+                {
+                    //We need to Something related to Attack Enemy
+                }
+                else
+                {
+                    return hit.point;
+                }
             }
         }
-        _anim.SetBool("isRunning", _nav.hasPath);
+
+        return hit.point ;
     }
+
+   
+    private void Avatar_Movement(Vector3 hitPoint)
+    {
+        avatar_Nav.SetDestination(hitPoint);
+        avatar_Anim.SetBool("isWalking", avatar_Nav.hasPath);
+    }
+
+
+
+
+
+
 } //Class
 
 
