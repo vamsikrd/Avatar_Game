@@ -63,7 +63,6 @@ public class AIState : MonoBehaviour
             targetTower = _towers[currentTowerIndex];
             towerSelected = true;
             canAttack = true;
-            print("!");
         }
     }
 
@@ -74,7 +73,7 @@ public class AIState : MonoBehaviour
             if(Vector3.Distance(transform.position,currentTarget.position) <= _attackRange)
             {
                 _navAgent.ResetPath();
-                print("Attack");
+                //TODO: play attack animation//
             }
             else
             {
@@ -86,9 +85,12 @@ public class AIState : MonoBehaviour
         {
             _towers.Remove(targetTower);
             canAttack = false;
+            if(_towers.Count == 0)
+            {
+                canAttack = true;
+                targetTower = defender;
+            }
             SelectingATower();
         }
-    }
-
-   
+    }  
 }
