@@ -1,15 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
     //Inspector Assigned
     [SerializeField] private GameObject EnemyPrefab;
+    [SerializeField] private Text currentwaveText;
+    [SerializeField] private GameObject waveObj;
+    [SerializeField] private GameObject gameOverObj;
 
     //Public
     public List<AIState> _enemies = new List<AIState>();
-    public int totalWaves = 2; //No of Towers == No of Waves
+    public int totalWaves = 1; //No of Towers == No of Waves
     public int currentWave =  0;
     public int totalEnemiesPerWave;
     public int enemiesOnScreen;
@@ -26,12 +31,12 @@ public class LevelManager : MonoBehaviour
 
     public void Awake()
     {
-         
+        gameOverObj.SetActive(false);
     }
 
     public void Update()
     {
-      
+        CalculatingEnemies();
     }
 
     private void SpawningEnemies()
@@ -39,24 +44,42 @@ public class LevelManager : MonoBehaviour
         GameObject enemy = Instantiate(EnemyPrefab);
         Vector3 enemyPosition = Vector3.zero;
         index = Random.Range(0, spawnPoints.Length);
-        enemyPosition = spawnPoints[index].position;
-        enemy.transform.position = enemyPosition;
+        enemyPosition = spawnPoints[index].localPosition;
+        enemy.transform.localPosition = enemyPosition;
         _enemies.Add(enemy.GetComponent<AIState>());
     }
 
     public void CalculatingEnemies()
     {
-        int enemiesPerWave = Random.Range(minEnemies, maxEnemies);
-        for(;currentWave < totalWaves;currentWave++)
+        currentwaveText.text = currentWave.ToString() + " / 6";
+        if (waveDone)
         {
-            if (!waveDone)
+            if(_enemies.Count < 2)
             {
-                for (int i = 0; i < enemiesPerWave; i++)
-                {
-                    SpawningEnemies();
-                    waveDone = true;
-                }
+                waveDone = false;
+                currentWave++;
+                totalWaves++;
             }
+            else
+            {
+                return;
+            }
+        }
+        if(totalWaves == 7)
+        {
+            gameOverObj.SetActive(true);
+            return;
+        }
+        int enemiesPerWave = Random.Range(minEnemies, maxEnemies);
+        while(currentWave < totalWaves)
+        {
+            for (int i = 0; i < enemiesPerWave; i++)
+            {
+                waveObj.SetActive(true);
+                SpawningEnemies();
+                waveDone = true;
+            }
+            if (waveDone) break;
         }
     }
 
@@ -64,4 +87,18 @@ public class LevelManager : MonoBehaviour
     {
         _enemies.Remove(deadEnemy);
     }
-}
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void QuitGame()
+    {
+        SceneManager.LoadScene(0); // go to the StartMenu
+    }
+
+
+
+
+} //Class

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Tower
+  - PlayerBullet
   layers:
   - Default
   - TransparentFX
@@ -16,12 +17,12 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player_Bullet
+  - Enemy
+  - Player
+  - Enemy_Bullet
+  - Ground
+  - Map Layer
   - 
   - 
   - 
