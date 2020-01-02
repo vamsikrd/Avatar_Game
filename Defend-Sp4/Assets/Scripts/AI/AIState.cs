@@ -6,6 +6,7 @@ public class AIState : MonoBehaviour
 {
     private Animator _anim;
     private NavMeshAgent _navAgent;
+    private int hitTimes = 3;
 
     [SerializeField] private Transform targetTower = null;
     [SerializeField] private Transform defender = null;
@@ -23,9 +24,12 @@ public class AIState : MonoBehaviour
     public bool canAttack = false;
     [Range(0f, 10f)] public float _attackRange = 2f;
     [Range(5, 10)] public float attackOffset = 6f;
+    public bool isDead;
 
     private int _isAttacking = Animator.StringToHash("isAttacking");
     private int _isRunning = Animator.StringToHash("isRunning");
+    private int _isDead = Animator.StringToHash("isDead");
+    private int _isHurt = Animator.StringToHash("isHurt");
 
     private void Awake()
     {
@@ -44,10 +48,13 @@ public class AIState : MonoBehaviour
     {
         _anim = GetComponent<Animator>();
         _navAgent = GetComponent<NavMeshAgent>();
+        isDead = false;
     }
 
     private void Update()
     {
+        if (isDead) return;
+
         if (!towerSelected)
               SelectingATower();
 
@@ -68,6 +75,8 @@ public class AIState : MonoBehaviour
 
     private void SelectingATower()
     {
+        if (isDead) return;
+
         if (canAttack) return;
         totalTowers = _towers.Count;
         currentTowerIndex = Random.Range(0, totalTowers);
@@ -81,6 +90,8 @@ public class AIState : MonoBehaviour
 
     private void Attack(Transform currentTarget)
     {
+        if (isDead) return;
+
         if(currentTarget != null)
         {
             if(Vector3.Distance(transform.position,currentTarget.position) <= _attackRange)
@@ -116,16 +127,29 @@ public class AIState : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
         if(other.CompareTag("PlayerBullet"))
         {
-            FindObjectOfType<LevelManager>().RemoveDeadEnemy(this);
-            Destroy(this.gameObject);
+            hitTimes--;
+            _anim.SetTrigger(_isHurt);
+            if (hitTimes <= 0 && isDead == false)
+            {
+                FindObjectOfType<LevelManager>().RemoveDeadEnemy(this);
+                isDead = true;
+                FindObjectOfType<Erika_Defender>().CurrentTarget(isDead);
+                _anim.SetTrigger(_isDead);
+                _navAgent.ResetPath();
+                Destroy(this.gameObject,2f);
+            }
+
         }
     }
 
     //called by the animation event
     public void AttackEvent()
     {
+        if (isDead) return;
+
         if(attackBallPrefab != null)
         {
             GameObject ball = Instantiate(attackBallPrefab);

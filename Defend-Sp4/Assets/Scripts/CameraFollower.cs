@@ -4,39 +4,19 @@ using UnityEngine;
 
 public class CameraFollower : MonoBehaviour
 {
-    Vector3 zoomUpdate = Vector3.zero;
-    Vector3 cameraPosition;
-    float zoom;
-    [SerializeField] float zoomSpeed = 10f;
-
-    public LayerMask groundLayer;
+    public GameObject _target;
+    private Vector3 offset;
 
     private void Start()
     {
-        cameraPosition = transform.position;
+        offset = transform.position - _target.transform.position;
     }
 
     private void Update()
     {
-        //CameraZoom();
+        transform.position = new Vector3(_target.transform.position.x + offset.x,
+                                         _target.transform.position.y + offset.y,
+                                         _target.transform.position.z + offset.z);
     }
 
-    private void MousePosition()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hitInfo;
-        if(Physics.Raycast(ray,out hitInfo,groundLayer))
-        {
-
-        }
-    }
-
-    private void CameraZoom()
-    {
-        zoom = Input.GetAxisRaw("Mouse ScrollWheel") * zoomSpeed * Time.deltaTime;
-        zoomUpdate.y = zoom;
-        cameraPosition.y -= zoomUpdate.y;
-        cameraPosition.y = Mathf.Clamp(cameraPosition.y, 10f, 20f);
-        transform.position = cameraPosition;
-    }
 } //Class

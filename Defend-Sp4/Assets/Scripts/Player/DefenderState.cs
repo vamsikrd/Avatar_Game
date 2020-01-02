@@ -55,7 +55,7 @@ public abstract class DefenderState : MonoBehaviour
 
     protected virtual void ProjectRaycast()
     {
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButton(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
@@ -123,4 +123,13 @@ public abstract class DefenderState : MonoBehaviour
             _audioSource.PlayOneShot(arrowSound);
         }
     }
+
+    public void CurrentTarget(bool isDead)
+    {
+        if(isDead)
+        {
+            currentTarget = null;
+        }
+    }
+
 }//Class

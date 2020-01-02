@@ -2180,6 +2180,7 @@ MonoBehaviour:
   canAttack: 0
   _attackRange: 8
   attackOffset: 10
+  isDead: 0
 --- !u!195 &4983330357927350261
 NavMeshAgent:
   m_ObjectHideFlags: 0

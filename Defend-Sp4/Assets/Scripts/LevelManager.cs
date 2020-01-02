@@ -11,6 +11,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Text currentwaveText;
     [SerializeField] private GameObject waveObj;
     [SerializeField] private GameObject gameOverObj;
+    [SerializeField] private Text currentWaveTimeText;
 
     //Public
     public List<AIState> _enemies = new List<AIState>();
@@ -24,6 +25,11 @@ public class LevelManager : MonoBehaviour
     public int minEnemies = 5;   // per wave //
     public int maxEnemies = 8; // per wave //
 
+    public float nextWaveTime = 5f;
+    public float currentWaveTime = 0f;
+    private int currentWaveTimeInt;
+    
+
     public bool waveDone = false;
 
     private int index;
@@ -32,11 +38,14 @@ public class LevelManager : MonoBehaviour
     public void Awake()
     {
         gameOverObj.SetActive(false);
+        currentWaveTime = nextWaveTime;
     }
 
     public void Update()
     {
         CalculatingEnemies();
+        currentWaveTimeInt = (int)currentWaveTime;
+        currentWaveTimeText.text = currentWaveTimeInt.ToString();
     }
 
     private void SpawningEnemies()
@@ -59,27 +68,39 @@ public class LevelManager : MonoBehaviour
                 waveDone = false;
                 currentWave++;
                 totalWaves++;
+                currentWaveTime = nextWaveTime;
             }
             else
             {
                 return;
             }
         }
-        if(totalWaves == 7)
+        if(totalWaves == 7 && gameOverObj.activeInHierarchy == false)
         {
             gameOverObj.SetActive(true);
             return;
         }
-        int enemiesPerWave = Random.Range(minEnemies, maxEnemies);
-        while(currentWave < totalWaves)
+        if (!waveDone)
         {
-            for (int i = 0; i < enemiesPerWave; i++)
+            currentWaveTime -= Time.deltaTime;
+            if (currentWaveTime <= 0)
             {
-                waveObj.SetActive(true);
-                SpawningEnemies();
-                waveDone = true;
+                int enemiesPerWave = Random.Range(minEnemies, maxEnemies);
+                while (currentWave < totalWaves)
+                {
+                    waveObj.SetActive(true);
+                    for (int i = 0; i < enemiesPerWave; i++)
+                    {
+                        SpawningEnemies();
+                        waveDone = true;
+                    }
+                    if (waveDone)
+                    {
+                        currentWaveTime = nextWaveTime;
+                        break;
+                    }
+                }
             }
-            if (waveDone) break;
         }
     }
 
