@@ -27,6 +27,7 @@ public abstract class DefenderState : MonoBehaviour
     public AudioClip arrowSound;
     public AudioClip[] gotEnemySound;
     private int totalClips;
+    private bool audioPlayed = false;
 
     private void Awake()
     {
@@ -64,7 +65,6 @@ public abstract class DefenderState : MonoBehaviour
                 if(hitInfo.collider.CompareTag("Enemy"))
                 {
                     Attack(hitInfo);
-                    _audioSource.PlayOneShot(gotEnemySound[Random.Range(0, totalClips)]);
                 }
                 else
                 {
@@ -81,6 +81,7 @@ public abstract class DefenderState : MonoBehaviour
        if(currentTarget != newtarget)
         {
             currentTarget = newtarget;
+            audioPlayed = false;
         }
         goingForAttack = true;
     }
@@ -91,6 +92,11 @@ public abstract class DefenderState : MonoBehaviour
         {
             goingForAttack = false;
             return;
+        }
+        if(currentTarget && audioPlayed == false)
+        {
+            _audioSource.PlayOneShot(gotEnemySound[Random.Range(0, totalClips)]);
+            audioPlayed = true;
         }
         if ( goingForAttack && Vector3.Distance(transform.position, currentTarget.transform.position) <= attackRange)
         {
@@ -121,6 +127,7 @@ public abstract class DefenderState : MonoBehaviour
             arrow.transform.rotation = transform.rotation;
             arrow.GetComponent<Rigidbody>().AddForce(transform.forward * bulletSpeed, ForceMode.Impulse);
             _audioSource.PlayOneShot(arrowSound);
+            Destroy(arrow, 1f);
         }
     }
 

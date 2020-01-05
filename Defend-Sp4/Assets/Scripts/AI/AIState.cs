@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class AIState : MonoBehaviour
 {
     private Animator _anim;
     private NavMeshAgent _navAgent;
-    private int hitTimes = 3;
+    private int hitTimes = 4;
+    private HealthBar_UI _myHealth;
+    private Image _myHealthImage;
+    private Transform healthUI;
 
     [SerializeField] private Transform targetTower = null;
     [SerializeField] private Transform defender = null;
@@ -42,6 +46,7 @@ public class AIState : MonoBehaviour
             }
         }
         defender = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        _myHealth = GetComponent<HealthBar_UI>();
     }
 
     private void Start()
@@ -49,6 +54,8 @@ public class AIState : MonoBehaviour
         _anim = GetComponent<Animator>();
         _navAgent = GetComponent<NavMeshAgent>();
         isDead = false;
+        _myHealthImage = _myHealth.HealthImage;
+        healthUI = _myHealth.UI;
     }
 
     private void Update()
@@ -127,19 +134,24 @@ public class AIState : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
+        if(hitTimes <= 0) { return; }
         if(other.CompareTag("PlayerBullet"))
         {
+            if (_myHealthImage != null)
+            {
+                _myHealthImage.fillAmount -= _myHealthImage.fillAmount / hitTimes;
+            }
+
             hitTimes--;
             _anim.SetTrigger(_isHurt);
             if (hitTimes <= 0 && isDead == false)
             {
                 FindObjectOfType<LevelManager>().RemoveDeadEnemy(this);
+                Destroy(healthUI.gameObject);
                 isDead = true;
                 FindObjectOfType<Erika_Defender>().CurrentTarget(isDead);
-                _anim.SetTrigger(_isDead);
                 _navAgent.ResetPath();
-                Destroy(this.gameObject,2f);
+                Destroy(this.gameObject,5f);
             }
 
         }
