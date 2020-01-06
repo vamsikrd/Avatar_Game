@@ -146,15 +146,20 @@ public class AIState : MonoBehaviour
             _anim.SetTrigger(_isHurt);
             if (hitTimes <= 0 && isDead == false)
             {
-                FindObjectOfType<LevelManager>().RemoveDeadEnemy(this);
-                Destroy(healthUI.gameObject);
+                FindObjectOfType<LevelManager>().RemoveDeadEnemy(this); // remove enemy form the list
+                Destroy(healthUI.gameObject); //heatlth UI bar
                 isDead = true;
-                FindObjectOfType<Erika_Defender>().CurrentTarget(isDead);
+                FindObjectOfType<Erika_Defender>().CurrentTarget(isDead); // to know the player that target is dead
                 _navAgent.ResetPath();
-                Destroy(this.gameObject,5f);
+                Die();
             }
 
         }
+    }
+
+    private void Die()
+    {
+        _anim.SetTrigger("isDead");
     }
 
     //called by the animation event
