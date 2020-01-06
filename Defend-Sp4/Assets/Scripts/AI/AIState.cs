@@ -160,6 +160,7 @@ public class AIState : MonoBehaviour
     private void Die()
     {
         _anim.SetTrigger("isDead");
+        Destroy(this.gameObject, 2f);
     }
 
     //called by the animation event

@@ -13,6 +13,7 @@ public class AttackBall : MonoBehaviour
             GameObject explo = Instantiate(explosion.gameObject);
             explo.transform.position = this.transform.position;
             Destroy(explo, 1f);
+            FindObjectOfType<LevelManager>().MainHealth();
             Destroy(this.gameObject);
         }
     }

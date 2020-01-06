@@ -12,11 +12,12 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private GameObject waveObj;
     [SerializeField] private GameObject gameOverObj;
     [SerializeField] private Text currentWaveTimeText;
+    [SerializeField] private Slider mainHealthSlider;
 
     //Public
     public List<AIState> _enemies = new List<AIState>();
     public int totalWaves = 1; //No of Towers == No of Waves
-    public int currentWave =  0;
+    public int currentWave =  1;
     public int totalEnemiesPerWave;
     public int enemiesOnScreen;
     public int maxEnemiesOnScreen = 6; 
@@ -33,6 +34,7 @@ public class LevelManager : MonoBehaviour
     public bool waveDone = false;
 
     private int index;
+    private float healthPoint = 0.5f;
  
 
     public void Awake()
@@ -68,6 +70,7 @@ public class LevelManager : MonoBehaviour
                 waveDone = false;
                 currentWave++;
                 totalWaves++;
+                healthPoint += 0.2f;
                 currentWaveTime = nextWaveTime;
             }
             else
@@ -112,14 +115,27 @@ public class LevelManager : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene(0);
+        FindObjectOfType<AudioManager>().Destroy();
     }
 
     public void QuitGame()
     {
         SceneManager.LoadScene(0); // go to the StartMenu
+        FindObjectOfType<AudioManager>().Destroy();
     }
 
-
+    public void MainHealth()
+    {
+        mainHealthSlider.value -= healthPoint;
+        if(mainHealthSlider.value <= 0)
+        {
+            gameOverObj.SetActive(true);
+            if(FindObjectOfType<Erika_Defender>().playerisDead == false)
+            {
+                FindObjectOfType<Erika_Defender>().playerisDead = true;
+            }
+        }
+    }
 
 
 } //Class

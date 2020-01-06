@@ -28,6 +28,13 @@ public abstract class DefenderState : MonoBehaviour
     public AudioClip[] gotEnemySound;
     private int totalClips;
     private bool audioPlayed = false;
+    private bool dead = false;
+
+    public bool playerisDead
+    {
+        get { return dead; }
+        set { dead = value; }
+    }
 
     private void Awake()
     {
@@ -39,10 +46,12 @@ public abstract class DefenderState : MonoBehaviour
         _animator = GetComponent<Animator>();
         _navAgent = GetComponent<NavMeshAgent>();
         _audioSource = GetComponent<AudioSource>();
+        _audioSource.volume = FindObjectOfType<AudioManager>().SoundVolume;
     }
 
     protected virtual void Update()
     {
+        if (dead) return;
         ProjectRaycast();
         if (goingForAttack) CanAttack();
         _animator.SetBool(_isWalkingHash, _navAgent.hasPath);
