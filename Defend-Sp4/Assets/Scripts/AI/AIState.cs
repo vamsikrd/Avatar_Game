@@ -86,7 +86,13 @@ public class AIState : MonoBehaviour
 
         if (canAttack) return;
         totalTowers = _towers.Count;
-        currentTowerIndex = Random.Range(0, totalTowers);
+        currentTowerIndex = Random.Range(0, totalTowers + 5);
+        if(currentTowerIndex >= totalTowers)
+        {
+            targetTower = defender;
+            print("Defeder " + this.gameObject.name);
+        }
+        else
         if(currentTowerIndex < totalTowers)
         {
             targetTower = _towers[currentTowerIndex];
